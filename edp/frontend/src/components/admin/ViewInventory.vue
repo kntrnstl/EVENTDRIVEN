@@ -78,6 +78,7 @@ export default {
 <style scoped>
 .inventory-container {
   width: 100%;
+  
 }
 
 h2 {
@@ -95,6 +96,8 @@ h2 {
 /* ---------------- Modern Table ---------------- */
 .modern-table {
   width: 100%;
+  max-width: 100%;
+  margin:0 auto;
   border-collapse: separate;
   border-spacing: 0;
   background: rgba(8, 24, 18, 0.85);
