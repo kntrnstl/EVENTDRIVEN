@@ -198,6 +198,7 @@ export default {
 .dashboard-body {
   display: flex;
   flex: 1;
+  height: calc(100vh - 70px); /* full viewport minus header */
   overflow: hidden;
 }
 
@@ -281,12 +282,17 @@ export default {
 /* ---------------- Main Content ---------------- */
 .main-content {
   flex: 1;
-  padding: 30px;
-  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  overflow:hidden;
 }
 
 /* ---------------- Content Card ---------------- */
 .content-card {
+  max-width: 1200px;
+  max-height: 100%;
+  overflow: hidden;
   background: rgba(8, 24, 18, 0.9);
   backdrop-filter: blur(12px);
   border-radius: 20px;
