@@ -3,7 +3,7 @@
     <h2>{{ product.name }}</h2>
     <p>{{ product.description }}</p>
     <p>Category: {{ product.category }}</p>
-    <p>Price: ${{ product.price.toFixed(2) }}</p>
+    <p>Price: ₱{{ product.price.toFixed(2) }}</p>
     <div v-if="product.sizes.length">
       <label>Sizes:</label>
       <ul>
@@ -18,7 +18,7 @@
 
 <script>
 export default {
-  props: ['product']
+  props: ['product'] // expects a product object passed from parent
 }
 </script>
 

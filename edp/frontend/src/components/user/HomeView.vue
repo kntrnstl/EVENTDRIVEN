@@ -28,17 +28,18 @@ export default {
   async created() {
     try {
       const token = localStorage.getItem('token')
-      const res = await axios.get('/api/admin/products', {
-        headers: { Authorization: `Bearer ${token}` }
+      // Use public products endpoint for regular users
+      const res = await axios.get('http://localhost:3000/api/products', {
+        headers: { Authorization: `Bearer ${token}` } // optional if public
       })
-      // For demo, take first 4 as featured
-      this.featuredProducts = res.data.slice(0, 4)
+      this.featuredProducts = res.data.slice(0, 4) // first 4 as featured
     } catch (err) {
-      console.error(err)
+      console.error('Error fetching products:', err)
     }
   }
 }
 </script>
+
 
 <style scoped>
 .home-view {

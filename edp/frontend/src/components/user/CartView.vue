@@ -1,6 +1,7 @@
 <template>
-  <div>
+  <div class="cart-view">
     <h2>Shopping Cart</h2>
+
     <table v-if="cart.length">
       <thead>
         <tr>
@@ -13,23 +14,23 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(item, index) in cart" :key="index">
+        <tr v-for="item in cart" :key="item.id">
           <td>{{ item.name }}</td>
           <td>{{ item.size }}</td>
           <td>₱{{ item.price }}</td>
           <td>
-            <input type="number" v-model.number="item.quantity" min="1" />
+            <input type="number" v-model.number="item.quantity" min="1" @change="updateQuantity(item)" />
           </td>
-          <td>₱{{ item.price * item.quantity }}</td>
+          <td>₱{{ (item.price * item.quantity).toFixed(2) }}</td>
           <td>
-            <button @click="removeItem(index)">X</button>
+            <button @click="removeItem(item.id)">X</button>
           </td>
         </tr>
       </tbody>
     </table>
-    <p v-else>Your cart is empty</p>
 
-    <p>Total: ₱{{ totalPrice }}</p>
+    <p v-else>Your cart is empty</p>
+    <p v-if="cart.length">Total: ₱{{ totalPrice.toFixed(2) }}</p>
     <button @click="checkout" :disabled="!cart.length">Checkout</button>
   </div>
 </template>
@@ -38,23 +39,60 @@
 import axios from 'axios'
 
 export default {
-  props: ['cart'],
+  data() {
+    return {
+      cart: []
+    }
+  },
   computed: {
     totalPrice() {
       return this.cart.reduce((acc, item) => acc + item.price * item.quantity, 0)
     }
   },
   methods: {
-    removeItem(index) {
-      this.cart.splice(index, 1)
-      this.$emit('update-cart', this.cart)
+    async fetchCart() {
+      try {
+        const token = localStorage.getItem('token')
+        if (!token) return
+
+        const res = await axios.get('/api/cart', {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        this.cart = res.data
+      } catch (err) {
+        console.error('Fetch cart error:', err)
+      }
+    },
+    async updateQuantity(item) {
+      try {
+        const token = localStorage.getItem('token')
+        await axios.put(
+          `/api/cart/${item.id}`,
+          { quantity: item.quantity },
+          { headers: { Authorization: `Bearer ${token}` } }
+        )
+        await this.fetchCart()
+      } catch (err) {
+        alert('Failed to update quantity')
+      }
+    },
+    async removeItem(itemId) {
+      try {
+        const token = localStorage.getItem('token')
+        await axios.delete(`/api/cart/${itemId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        await this.fetchCart()
+      } catch (err) {
+        alert('Failed to remove item')
+      }
     },
     async checkout() {
-      const token = localStorage.getItem('token')
-      if (!token) return alert('Please login first.')
-
       try {
-        const res = await axios.post(
+        const token = localStorage.getItem('token')
+        if (!token) return alert('Please login first.')
+
+        await axios.post(
           '/api/orders',
           {
             items: this.cart.map(item => ({
@@ -68,21 +106,16 @@ export default {
           { headers: { Authorization: `Bearer ${token}` } }
         )
 
-        alert('Order placed successfully! Order ID: ' + res.data.orderId)
+        alert('Order placed successfully!')
         this.cart = []
-        this.$emit('update-cart', this.cart)
+        await this.fetchCart()
       } catch (err) {
         alert(err.response?.data?.message || 'Checkout failed')
       }
     }
   },
-  watch: {
-    cart: {
-      deep: true,
-      handler(val) {
-        this.$emit('update-cart', val)
-      }
-    }
+  async mounted() {
+    await this.fetchCart()
   }
 }
 </script>

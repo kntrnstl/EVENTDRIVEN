@@ -9,6 +9,7 @@
       class="search-input"
     />
 
+    <!-- Products Grid -->
     <div class="products-grid">
       <div
         v-for="product in filteredProducts"
@@ -45,25 +46,37 @@
           />
         </label>
 
-        <button @click="addToCart(product)">Add to Cart</button>
+        <div class="buttons">
+          <button @click="addToCart(product)">Add to Cart</button>
+          <button @click="showDetails(product.product_id)">View Details</button>
+        </div>
       </div>
     </div>
 
     <p v-if="!filteredProducts.length">No products found.</p>
+
+    <!-- Product Details Modal -->
+    <ProductDetails
+      v-if="selectedProduct"
+      :product="selectedProduct"
+      @close="selectedProduct = null"
+    />
   </div>
 </template>
 
 <script>
 import axios from 'axios'
+import ProductDetails from './ProductDetails.vue'
 
 export default {
-  props: ['cart'],
+  components: { ProductDetails },
   data() {
     return {
       products: [],
       searchQuery: '',
       selectedSize: {},
-      quantity: {}
+      quantity: {},
+      selectedProduct: null
     }
   },
   computed: {
@@ -76,10 +89,10 @@ export default {
   },
   async created() {
     try {
-      const res = await axios.get('/api/products')
+      const res = await axios.get('http://localhost:3000/api/products')
       this.products = res.data
 
-      // Initialize selected size and quantity for each product
+      // Initialize selected size and quantity
       this.products.forEach(p => {
         this.selectedSize[p.product_id] = p.sizes[0] || null
         this.quantity[p.product_id] = 1
@@ -89,31 +102,43 @@ export default {
     }
   },
   methods: {
-    addToCart(product) {
+    async addToCart(product) {
       const size = this.selectedSize[product.product_id]
       const qty = this.quantity[product.product_id]
 
-      if (!size) {
-        alert('Please select a size')
-        return
+      if (!size) return alert('Please select a size')
+      if (qty < 1 || qty > size.stock) return alert(`Quantity must be between 1 and ${size.stock}`)
+
+      const token = localStorage.getItem('token')
+      if (!token) return alert('Please login first.')
+
+      try {
+        await axios.post(
+          'http://localhost:3000/api/cart',
+          {
+            product_id: product.product_id,
+            size_id: size.id,
+            quantity: qty,
+            price: product.price
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` }
+          }
+        )
+        alert(`${product.name} added to cart!`)
+      } catch (err) {
+        console.error(err)
+        alert(err.response?.data?.message || 'Failed to add to cart')
       }
-
-      if (qty < 1 || qty > size.stock) {
-        alert(`Quantity must be between 1 and ${size.stock}`)
-        return
+    },
+    async showDetails(productId) {
+      try {
+        const res = await axios.get(`http://localhost:3000/api/products/${productId}`)
+        this.selectedProduct = res.data
+      } catch (err) {
+        alert('Failed to fetch product details')
+        console.error(err)
       }
-
-      // Emit event to parent to update cart
-      this.$emit('add-to-cart', {
-        product_id: product.product_id,
-        name: product.name,
-        price: product.price,
-        size: size.size,
-        size_id: size.id,
-        quantity: qty
-      })
-
-      alert(`${product.name} added to cart!`)
     }
   }
 }
@@ -147,8 +172,13 @@ label {
   margin-top: 10px;
 }
 
-button {
+.buttons {
   margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+button {
   padding: 8px 12px;
   cursor: pointer;
   background-color: #2d2d2d;
