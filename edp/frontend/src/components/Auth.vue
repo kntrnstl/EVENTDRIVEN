@@ -170,6 +170,7 @@ export default {
 </script>
 
 <style scoped>
+
 .auth-wrapper {
   background: #0d2b1f;
   min-height: 100vh;
@@ -178,6 +179,13 @@ export default {
   align-items: center;  
   padding: 20px;
   font-family: 'Inter', sans-serif;
+    overflow: auto;           /* still scrollable */
+  scrollbar-width: none;    /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+
+.auth-wrapper::-webkit-scrollbar {
+  display: none;
 }
 
 .auth-container {
