@@ -91,7 +91,7 @@ export default {
   },
   data() {
     return {
-      currentView: 'inventory',
+      currentView: localStorage.getItem('currentView') || 'inventory',
       sidebarOpen: true,
       showText: true,
       isAnimating: false
@@ -133,6 +133,7 @@ export default {
     },
     selectView(view) {
       this.currentView = view
+        localStorage.setItem('currentView', view); // save the view
       if (window.innerWidth < 900) this.sidebarOpen = false
     }
   }
