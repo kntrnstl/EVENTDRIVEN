@@ -2,14 +2,12 @@
   <div class="products-view">
     <h2>Products</h2>
 
-    <!-- Search -->
     <input
       v-model="searchQuery"
       placeholder="Search products..."
       class="search-input"
     />
 
-    <!-- Products Grid -->
     <div class="products-grid">
       <div
         v-for="product in filteredProducts"
@@ -18,10 +16,9 @@
       >
         <h3>{{ product.name }}</h3>
         <p>{{ product.description }}</p>
-        <p>Category: {{ product.category }}</p>
-        <p>Price: ₱{{ product.price }}</p>
+        <p class="category">Category: {{ product.category }}</p>
+        <p class="price">₱{{ product.price }}</p>
 
-        <!-- Sizes -->
         <label>
           Size:
           <select v-model="selectedSize[product.product_id]">
@@ -35,7 +32,6 @@
           </select>
         </label>
 
-        <!-- Quantity -->
         <label>
           Quantity:
           <input
@@ -47,15 +43,14 @@
         </label>
 
         <div class="buttons">
-          <button @click="addToCart(product)">Add to Cart</button>
-          <button @click="showDetails(product.product_id)">View Details</button>
+          <button class="btn-add-cart" @click="addToCart(product)">Add</button>
+          <button class="btn-details" @click="showDetails(product.product_id)">View</button>
         </div>
       </div>
     </div>
 
-    <p v-if="!filteredProducts.length">No products found.</p>
+    <p v-if="!filteredProducts.length" class="no-products">No products found.</p>
 
-    <!-- Product Details Modal -->
     <ProductDetails
       v-if="selectedProduct"
       :product="selectedProduct"
@@ -91,8 +86,6 @@ export default {
     try {
       const res = await axios.get('http://localhost:3000/api/products')
       this.products = res.data
-
-      // Initialize selected size and quantity
       this.products.forEach(p => {
         this.selectedSize[p.product_id] = p.sizes[0] || null
         this.quantity[p.product_id] = 1
@@ -115,15 +108,8 @@ export default {
       try {
         await axios.post(
           'http://localhost:3000/api/cart',
-          {
-            product_id: product.product_id,
-            size_id: size.id,
-            quantity: qty,
-            price: product.price
-          },
-          {
-            headers: { Authorization: `Bearer ${token}` }
-          }
+          { product_id: product.product_id, size_id: size.id, quantity: qty, price: product.price },
+          { headers: { Authorization: `Bearer ${token}` } }
         )
         alert(`${product.name} added to cart!`)
       } catch (err) {
@@ -147,12 +133,23 @@ export default {
 <style scoped>
 .products-view {
   padding: 20px;
+  font-family: 'Inter', sans-serif;
+}
+
+.products-view h2 {
+  text-align: center;
+  font-size: 26px;
+  margin-bottom: 20px;
 }
 
 .search-input {
   width: 100%;
-  padding: 8px;
-  margin-bottom: 20px;
+  max-width: 350px;
+  padding: 8px 12px;
+  margin: 0 auto 20px auto;
+  display: block;
+  border-radius: 8px;
+  border: 1px solid #ccc;
 }
 
 .products-grid {
@@ -161,10 +158,17 @@ export default {
   gap: 15px;
 }
 
+/* --- ORIGINAL SMALL CARD STYLE --- */
 .product-card {
   border: 1px solid #ccc;
   padding: 15px;
   border-radius: 8px;
+  background: #ffffff;
+  transition: all 0.2s ease;
+}
+.product-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 label {
@@ -172,18 +176,47 @@ label {
   margin-top: 10px;
 }
 
+select, input[type="number"] {
+  width: 100%;
+  padding: 5px 8px;
+  margin-top: 4px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
 .buttons {
   margin-top: 10px;
   display: flex;
-  gap: 10px;
+  gap: 8px;
 }
 
 button {
-  padding: 8px 12px;
-  cursor: pointer;
-  background-color: #2d2d2d;
-  color: #fff;
+  flex: 1;
+  padding: 8px 0;
+  font-size: 13px;
+  border-radius: 6px;
   border: none;
-  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-add-cart {
+  background: #0f3d2e;
+  color: #fff;
+}
+.btn-add-cart:hover {
+  background: #145943;
+}
+.btn-details {
+  background: #7bf2b3;
+  color: #0f3d2e;
+}
+.btn-details:hover {
+  background: #57d9a0;
+}
+
+.no-products {
+  text-align: center;
+  color: #555;
+  margin-top: 20px;
 }
 </style>
