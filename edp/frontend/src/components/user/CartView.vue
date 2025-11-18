@@ -1,52 +1,37 @@
 <template>
   <div class="cart-view">
-
-    <!-- Custom Notification -->
-    <div
-      class="custom-notif"
-      :class="[{ show: notification.show }, notification.type]"
-    >
-      {{ notification.message }}
-    </div>
-
     <h2>Shopping Cart</h2>
 
-    <div v-if="cart.length" class="cart-card">
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Size</th>
-            <th>Price</th>
-            <th>Qty</th>
-            <th>Total</th>
-            <th>Remove</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="item in cart" :key="item.id">
-            <td>{{ item.name }}</td>
-            <td>{{ item.size }}</td>
-            <td>₱{{ item.price.toFixed(2) }}</td>
-            <td>
-              <input type="number" v-model.number="item.quantity" min="1" @change="updateQuantity(item)" />
-            </td>
-            <td>₱{{ (item.price * item.quantity).toFixed(2) }}</td>
-            <td>
-              <button class="remove-btn" @click="removeItem(item.id)">✕</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <table v-if="cart.length">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Size</th>
+          <th>Price</th>
+          <th>Qty</th>
+          <th>Total</th>
+          <th>Remove</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="item in cart" :key="item.id">
+          <td>{{ item.name }}</td>
+          <td>{{ item.size }}</td>
+          <td>₱{{ item.price }}</td>
+          <td>
+            <input type="number" v-model.number="item.quantity" min="1" @change="updateQuantity(item)" />
+          </td>
+          <td>₱{{ (item.price * item.quantity).toFixed(2) }}</td>
+          <td>
+            <button @click="removeItem(item.id)">X</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
-      <div class="cart-footer">
-        <p>Total: <strong>₱{{ totalPrice.toFixed(2) }}</strong></p>
-        <button class="checkout-btn" @click="checkout" :disabled="!cart.length">Checkout</button>
-      </div>
-    </div>
-
-    <p v-else class="empty-cart">Your cart is empty</p>
-
+    <p v-else>Your cart is empty</p>
+    <p v-if="cart.length">Total: ₱{{ totalPrice.toFixed(2) }}</p>
+    <button @click="checkout" :disabled="!cart.length">Checkout</button>
   </div>
 </template>
 
@@ -56,8 +41,7 @@ import axios from 'axios'
 export default {
   data() {
     return {
-      cart: [],
-      notification: { show: false, message: '', type: 'success' }
+      cart: []
     }
   },
   computed: {
@@ -66,25 +50,19 @@ export default {
     }
   },
   methods: {
-    showNotification(type, message) {
-      this.notification.type = type
-      this.notification.message = message
-      this.notification.show = true
-      setTimeout(() => { this.notification.show = false }, 3000)
+    async fetchCart() {
+      try {
+        const token = localStorage.getItem('token')
+        if (!token) return
+
+        const res = await axios.get('/api/cart', {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        this.cart = res.data
+      } catch (err) {
+        console.error('Fetch cart error:', err)
+      }
     },
-      async fetchCart() {
-        try {
-          const token = localStorage.getItem('token')
-          if (!token) return
-          const res = await axios.get('/api/cart', {
-            headers: { Authorization: `Bearer ${token}` }
-          })
-          this.cart = res.data
-        } catch (err) {
-          // silently fail, do nothing
-          console.error('Fetch cart error:', err)
-        }
-      },
     async updateQuantity(item) {
       try {
         const token = localStorage.getItem('token')
@@ -93,10 +71,9 @@ export default {
           { quantity: item.quantity },
           { headers: { Authorization: `Bearer ${token}` } }
         )
-        this.showNotification('success', 'Quantity updated')
         await this.fetchCart()
-      } catch {
-        this.showNotification('error', 'Failed to update quantity')
+      } catch (err) {
+        alert('Failed to update quantity')
       }
     },
     async removeItem(itemId) {
@@ -105,16 +82,15 @@ export default {
         await axios.delete(`/api/cart/${itemId}`, {
           headers: { Authorization: `Bearer ${token}` }
         })
-        this.showNotification('success', 'Item removed')
         await this.fetchCart()
-      } catch {
-        this.showNotification('error', 'Failed to remove item')
+      } catch (err) {
+        alert('Failed to remove item')
       }
     },
     async checkout() {
       try {
         const token = localStorage.getItem('token')
-        if (!token) return this.showNotification('error', 'Please login first.')
+        if (!token) return alert('Please login first.')
 
         await axios.post(
           '/api/orders',
@@ -130,11 +106,11 @@ export default {
           { headers: { Authorization: `Bearer ${token}` } }
         )
 
-        this.showNotification('success', 'Order placed successfully!')
+        alert('Order placed successfully!')
         this.cart = []
         await this.fetchCart()
       } catch (err) {
-        this.showNotification('error', err.response?.data?.message || 'Checkout failed')
+        alert(err.response?.data?.message || 'Checkout failed')
       }
     }
   },
@@ -143,6 +119,7 @@ export default {
   }
 }
 </script>
+
 
 <style scoped>
 .cart-view {
