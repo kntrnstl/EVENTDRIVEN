@@ -9,7 +9,7 @@
       {{ notification.message }}
     </div>
 
-    <h2>Add Product</h2>
+    <h2 class="page-title">Add Product ➕</h2>
 
     <!-- Product Name -->
     <input 
@@ -159,16 +159,16 @@ export default {
   },
 
   methods: {
-    // Show modern custom notification
     showNotification(type, message) {
       this.notification.type = type;
       this.notification.message = message;
       this.notification.show = true;
 
       setTimeout(() => {
-        this.notification.show = false;
-      }, 3000);
+        this.notification.show = false; // smooth hide
+      }, 3000); // adjust duration if needed
     },
+
 
     addSize() {
       if (!this.newSize.size || this.newSize.stock === '') {
@@ -247,11 +247,13 @@ export default {
   font-family: 'Inter', sans-serif;
 }
 
-h2 {
-  color: #0a3c2b;
-  font-weight: 700;
-  margin-bottom: 25px;
-  text-align: center;
+.page-title {
+    color: #1A5E46;
+    font-weight: 800;
+    font-size: 28px;
+    margin-bottom: 30px;
+    text-align: center;
+    letter-spacing: -0.2px;
 }
 
 .add-product-container input,
@@ -405,10 +407,10 @@ h2 {
   padding-left: 3px;
 }
 
-/* Modern Notification */
+/* Modern Custom Notification for ManageOrders */
 .custom-notif {
   position: fixed;
-  top: -80px;
+  top: -80px;               /* start hidden above */
   left: 50%;
   transform: translateX(-50%);
   padding: 15px 25px;
@@ -418,23 +420,26 @@ h2 {
   color: white;
   opacity: 0;
   pointer-events: none;
-  transition: all 0.35s ease;
+  transition: all 0.35s ease; /* smooth slide + fade */
   z-index: 9999;
 }
 
 .custom-notif.show {
-  top: 20px;
+  top: 20px;                /* slide down to visible position */
   opacity: 1;
   pointer-events: auto;
 }
 
+/* Success Notification */
 .custom-notif.success {
   background: linear-gradient(135deg, #00b061, #00773d);
   box-shadow: 0 5px 15px rgba(0, 255, 150, 0.3);
 }
 
+/* Error Notification */
 .custom-notif.error {
   background: linear-gradient(135deg, #d62828, #9b1d1d);
   box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
 }
+
 </style>

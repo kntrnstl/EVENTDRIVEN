@@ -10,9 +10,9 @@
 
     <div v-if="confirmDelete.show" class="confirm-overlay">
       <div class="confirm-box">
-        <p class="confirm-message">Are you sure you want to delete <strong>{{ confirmDelete.name }}</strong>? This cannot be undone.</p>
+        <p class="confirm-message">Are you sure you want to delete <strong>{{ confirmDelete.name }}</strong>? <br> This cannot be undone.</p>
         <div class="confirm-actions">
-          <button @click="confirmDeleteCategory" class="confirm-btn">Yes, Delete</button>
+          <button @click="confirmDeleteCategory" class="confirm-btn">Yes</button>
           <button @click="cancelDelete" class="cancel-btn">Cancel</button>
         </div>
       </div>
@@ -188,7 +188,7 @@ export default {
 /* ---------------- Base Container ---------------- */
 .category-container {
     max-width: 700px;
-    margin: 40px auto;
+    margin: 00px auto;
     padding: 35px;
     background: #ffffff;
     border-radius: 20px;
@@ -357,66 +357,14 @@ export default {
 }
 
 /* ---------------- Confirmation Modal ---------------- */
-.confirm-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.5); 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 10000;
-    opacity: 0;
-    animation: fadeIn 0.25s forwards;
-}
-
-.confirm-box {
-    background: white;
-    padding: 30px 40px;
-    border-radius: 15px;
-    max-width: 450px;
-    text-align: center;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-    transform: scale(0.95);
-    animation: scaleUp 0.25s forwards;
-}
-
-.confirm-message {
-    font-size: 18px;
-    margin-bottom: 25px;
-    font-weight: 500;
-    color: #333;
-}
-
-.confirm-actions {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-}
-.confirm-btn, .cancel-btn {
-    padding: 12px 25px;
-    border-radius: 10px;
-    border: none;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    min-width: 120px;
-}
-.confirm-btn {
-    background: #d62828; 
-    color: #fff;
-}
-.confirm-btn:hover {
-    background: #b82323;
-    transform: translateY(-1px);
-}
-.cancel-btn {
-    background: #f0f0f0;
-    color: #555;
-}
-.cancel-btn:hover {
-    background: #e0e0e0;
-    transform: translateY(-1px);
-}
+.confirm-overlay { position:fixed; inset:0; background: rgba(0,0,0,0.45); display:flex; align-items:center; justify-content:center; z-index:10000; }
+.confirm-box { background:white; padding:25px 30px; border-radius:20px; text-align:center; max-width:400px; box-shadow:0 12px 28px rgba(0,0,0,0.25); }
+.confirm-message { margin-bottom:20px; font-weight:600; color:#071815; }
+.confirm-actions { display:flex; justify-content:space-around; }
+.confirm-btn { padding:10px 22px; border-radius:12px; border:none; background: linear-gradient(135deg,#00b061,#00773d); color:#fff; font-weight:600; cursor:pointer; transition:all 0.3s ease;}
+.confirm-btn:hover { transform: translateY(-2px) scale(1.03); box-shadow:0 6px 18px rgba(0,255,150,0.3);}
+.cancel-btn { padding:10px 22px; border-radius:12px; border:none; background: linear-gradient(135deg,#d62828,#9b1d1d); color:#fff; font-weight:600; cursor:pointer; transition:all 0.3s ease;}
+.cancel-btn:hover { transform: translateY(-2px) scale(1.03); box-shadow:0 6px 18px rgba(255,0,0,0.3);}
 
 @keyframes fadeIn {
   to { opacity: 1; }

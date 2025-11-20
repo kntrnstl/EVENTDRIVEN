@@ -7,6 +7,8 @@ import HomeView from './HomeView.vue';
 import ProductsView from './ProductsView.vue';
 import CartView from './CartView.vue';
 import ContactView from './ContactView.vue';
+import MyOrders from './MyOrders.vue';
+
 
 // Router
 const router = useRouter();
@@ -84,14 +86,7 @@ const removeFromCart = (index) => {
         </li>
         <li class="cart-link-item">
             <a @click.prevent="setView('cart')" :class="{ active: currentView==='cart' }">
-            <span class="nav-link-inner">
-                <svg class="cart-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M7.75 3.5c-.966 0-1.75.784-1.75 1.75v1.5a.75.75 0 001.5 0v-1.5c0-.138.112-.25.25-.25h.5a.75.75 0 000-1.5h-.5z"/>
-                <path fill-rule="evenodd" d="M3.75 5.25a.75.75 0 01.75-.75h14.25a.75.75 0 010 1.5H4.5a.75.75 0 01-.75-.75zM17.5 7.5a.75.75 0 00-1.5 0v.5H8.75V7.5a.75.75 0 00-1.5 0v.5h-.5a2.25 2.25 0 00-2.25 2.25v8.25c0 1.24.978 2.25 2.25 2.25h12.5c1.272 0 2.25-1.01 2.25-2.25v-8.25a2.25 2.25 0 00-2.25-2.25h-.5v-.5zM7.25 10.5h9.5V19h-9.5v-8.5z" clip-rule="evenodd"/>
-                </svg>
-                Cart
-            </span>
-            <span class="cart-count" v-if="cart.length">{{ cart.length }}</span>
+            <span class="nav-link-inner">Cart </span>
             </a>
         </li>
         <li>
@@ -100,7 +95,11 @@ const removeFromCart = (index) => {
             </a>
         </li>
      </ul>
-      <button class="logout-btn" @click="confirmLogout">Logout</button>
+        <!-- New MyOrders button next to Logout -->
+          <div class="header-actions">
+            <button class="my-orders-btn" @click="setView('my-orders')">My Orders</button>
+            <button class="logout-btn" @click="confirmLogout">Logout</button>
+          </div>
     </nav>
 
     <!-- MAIN VIEW -->
@@ -110,6 +109,7 @@ const removeFromCart = (index) => {
                 <ProductsView v-if="currentView==='products'" @add-to-cart="addToCart" />
                 <CartView v-if="currentView==='cart'" :cart="cart" @update-cart="updateCart" @remove-item="removeFromCart" @navigate="setView" />
                 <ContactView v-if="currentView==='contact'" />
+                <MyOrders v-if="currentView==='my-orders'" />
             </div>
             </transition>
 
@@ -148,11 +148,27 @@ const removeFromCart = (index) => {
         </div>
         <div class="footer-section social-media">
           <h4>Follow Us</h4>
-          <div class="social-buttons">
-            <a href="#" target="_blank" class="social-btn"><span class="icon">f</span></a>
-            <a href="#" target="_blank" class="social-btn"><span class="icon">in</span></a>
-            <a href="#" target="_blank" class="social-btn"><span class="icon">t</span></a>
-          </div>
+            <div class="social-buttons">
+              <!-- Facebook -->
+              <a href="https://www.facebook.com/oning.flip?rdid=CStuOSchWk46Wans#" target="_blank" class="social-btn facebook">
+                <i class="fab fa-facebook-f"></i>
+              </a>
+
+              <!-- Instagram -->
+              <a href="https://www.instagram.com/oning.flip/?igsh=ZTczczJmdHV4ZWoy&fbclid=IwY2xjawOLdl1leHRuA2FlbQIxMQBzcnRjBmFwcF9pZAEwAAEeBbK2O6leCVqQJNRQoDeRYSrK1X-nxP59Le-H0uo9-gktNvI3txNPH08dm2w_aem_ZxBZwLPjWmaWPgME3YbjZg#" target="_blank" class="social-btn instagram">
+                <i class="fab fa-instagram"></i>
+              </a>
+
+              <!-- TikTok -->
+              <a href="https://www.tiktok.com/@oning.flip?_r=1&_t=ZS-91X0ZoVgIuF&fbclid=IwY2xjawOLdjRleHRuA2FlbQIxMQBzcnRjBmFwcF9pZAEwAAEeWxl0kEX8ean_4eMcFlpzXx1ENimfuS4W3qfsDz5rieLt5pmcrS3B-CPSkrA_aem_rKezCysOfwY-fgxmkhbXJA" target="_blank" class="social-btn tiktok">
+                <i class="fab fa-tiktok"></i>
+              </a>
+
+              <!-- X (Twitter) -->
+              <a href="https://x.com/FlipOning?t=lRS_tEJgadi81WDS4gv9RQ&s=09&fbclid=IwY2xjawOLfnVleHRuA2FlbQIxMQBzcnRjBmFwcF9pZAEwAAEe4xSO2r9xdG9sBYYwc85APgcU37OyUyRkPtYBMsw8ofzuYrE0ccMxtipfx0k_aem_l_dFwST_VozOvizuE4KWdw" target="_blank" class="social-btn x-logo">
+                <i class="fab fa-x"></i>
+              </a>
+            </div>
         </div>
       </div>
       <div class="footer-bottom">
@@ -281,6 +297,26 @@ const removeFromCart = (index) => {
   min-height: calc(100vh - 140px);
   position: relative;
 }
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.my-orders-btn {
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  background: linear-gradient(135deg, #0073ff, #0055cc);
+  transition: all 0.3s;
+}
+.my-orders-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,115,255,0.3);
+}
+
 
 /* ===== NOTIFICATIONS ===== */
 .custom-notif {
@@ -355,11 +391,6 @@ const removeFromCart = (index) => {
 /* Cart icon + badge */
 .cart-link-item {
   position: relative;
-}
-
-.cart-icon {
-  width: 22px;
-  height: 22px;
 }
 
 .cart-count {
@@ -446,24 +477,41 @@ const removeFromCart = (index) => {
   gap: 10px;
   margin-top: 8px;
 }
+/* Social Buttons General */
 .social-btn {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 38px;
   height: 38px;
-  border-radius: 50%;
-  background: #145943;
-  color: #ecf0f1;
-  font-weight: 700;
-  font-size: 14px;
+  border-radius: 30%;
+  background: #145943; /* default background */
+  color: #fff;         /* icon color */
+  font-size: 16px;
   transition: all 0.3s;
 }
-.social-btn:hover {
-  transform: scale(1.1);
-  background: #7bf2b3;
-  color: #0f3d2e;
+
+/* Hover effects per brand */
+.social-btn.facebook:hover {
+  background: #1877f2; /* Facebook blue */
 }
+
+.social-btn.instagram:hover {
+  background: linear-gradient(45deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5); /* Instagram gradient */
+}
+
+.social-btn.tiktok:hover {
+  background: #000; /* TikTok black */
+}
+/* Icon stays white */
+.social-btn i {
+  color: #fff;
+}
+
+.social-btn.x-logo:hover {
+  background: #000; /* X uses black background */
+}
+
 
 .footer-bottom {
   text-align: center;

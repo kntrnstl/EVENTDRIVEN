@@ -93,7 +93,7 @@ export default {
 /* ---------------- Base & Layout ---------------- */
 .home-view {
   font-family: 'Inter', sans-serif;
-  background: #f5f7f6;
+  background: #ecf0ee;
   color: #071815;
   border-radius: 10px;
 }

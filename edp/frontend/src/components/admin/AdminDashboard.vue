@@ -152,6 +152,7 @@ export default {
       setTimeout(() => {
         localStorage.removeItem('token');
         localStorage.removeItem('role');
+        localStorage.removeItem('currentView'); // clear last view
         this.$router.push('/');
       }, 1000);
     }

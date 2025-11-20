@@ -1,7 +1,7 @@
 <template>
   <div class="cart-view">
     <div class="header">
-      <h2 class="title">Shopping Cart</h2>
+      <h2 class="title">Shopping Cart 🛒</h2>
       <p class="subtitle" v-if="cart.length">{{ cart.length }} item(s) in cart</p>
     </div>
 
@@ -165,9 +165,10 @@ export default {
 .cart-view {
   font-family: 'Inter', sans-serif;
   max-width: 1000px;
-  margin: 30px auto;
-  padding: 0 20px;
-  background: #f5f7f6; /* Matching background */
+  margin: 00px auto;
+  padding: 10px 20px 40px;
+  border-radius: 10px;
+  background: #ecf0ee; /* Matching background */
   color: #071815; /* Matching text color */
 }
 

@@ -182,10 +182,10 @@ export default {
 .products-view {
   font-family: 'Inter', sans-serif;
   max-width: 1200px;
-  margin: 30px auto;
+  margin: 0px auto;
   padding: 10px 20px 40px;
   border-radius: 10px;
-  background: #eaf0ed; /* Matching background */
+  background: #ecf0ee; /* Matching background */
   color: #071815; /* Matching text color */
 }
 

@@ -89,9 +89,9 @@ export default {
 /* ---------------- Core Container ---------------- */
 .contact-view {
   max-width: 800px;
-  margin: 80px auto;
+  margin: 0px auto;
   padding: 50px;
-  background: #ffffff; 
+  background: #ecf0ee; 
   border-radius: 25px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.02); 
   font-family: 'Inter', sans-serif;
@@ -205,7 +205,7 @@ textarea.input-soft-ui {
     text-align: center;
     margin-top: 50px;
     padding-top: 25px;
-    border-top: 1px solid #e0e0e0;
+    border-top:2px solid #0f3d2e;
 }
 .contact-info p {
     color: #777;
