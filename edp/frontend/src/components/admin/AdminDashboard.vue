@@ -58,6 +58,13 @@
               <span v-if="showText" class="label">Categories</span>
             </transition>
           </li>
+          <li @click="selectView('userManagement')" :class="{ active: currentView==='userManagement' }">
+            <span class="icon">👥</span>
+            <transition name="slide-fade" mode="out-in">
+              <span v-if="showText" class="label">User Management</span>
+            </transition>
+          </li>
+
           <li @click="selectView('reports')" :class="{ active: currentView==='reports' }">
             <span class="icon">📊</span>
             <transition name="slide-fade" mode="out-in">
@@ -99,6 +106,8 @@ import ManageOrders from './ManageOrders.vue'
 import Categories from './Categories.vue'
 import Reports from './Reports.vue'
 import ModifyProducts from './ModifyProducts.vue'
+import UserManagement from './UserManagement.vue'
+
 
 
 export default {
@@ -133,6 +142,7 @@ export default {
         case 'modifyProducts': return ModifyProducts
         case 'manageOrders': return ManageOrders
         case 'categories': return Categories
+        case 'userManagement': return UserManagement
         case 'reports': return Reports
         default: return ViewInventory
         
