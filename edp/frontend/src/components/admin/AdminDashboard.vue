@@ -52,6 +52,13 @@
               <span v-if="showText" class="label">Categories</span>
             </transition>
           </li>
+          <li @click="selectView('reports')" :class="{ active: currentView==='reports' }">
+            <span class="icon">📊</span>
+            <transition name="slide-fade" mode="out-in">
+              <span v-if="showText" class="label">Reports</span>
+            </transition>
+          </li>
+
         </ul>
       </aside>
 
@@ -84,6 +91,8 @@ import ViewInventory from './ViewInventory.vue'
 import AddProduct from './AddProduct.vue'
 import ManageOrders from './ManageOrders.vue'
 import Categories from './Categories.vue'
+import Reports from './Reports.vue'
+
 
 export default {
   setup() {
@@ -116,7 +125,9 @@ export default {
         case 'addProduct': return AddProduct
         case 'manageOrders': return ManageOrders
         case 'categories': return Categories
+        case 'reports': return Reports
         default: return ViewInventory
+        
       }
     }
   },
