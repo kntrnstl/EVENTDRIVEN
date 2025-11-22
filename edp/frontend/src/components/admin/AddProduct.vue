@@ -1,110 +1,205 @@
 <template>
   <div class="add-product-container">
-
     <!-- Modern Custom Notification -->
     <div 
       class="custom-notif"
       :class="[{ show: notification.show }, notification.type]"
     >
-      {{ notification.message }}
+      <div class="notif-content">
+        <div class="notif-icon">
+          <svg v-if="notification.type === 'success'" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        {{ notification.message }}
+      </div>
     </div>
 
-    <h2 class="page-title">Add Product ➕</h2>
-
-    <!-- Product Name -->
-    <input 
-      v-model="form.name" 
-      type="text" 
-      placeholder="Product Name"
-    />
-    <p v-if="errors.name" class="error">{{ errors.name }}</p>
-
-    <!-- Description -->
-    <textarea 
-      v-model="form.description" 
-      placeholder="Description"
-    ></textarea>
-    <p v-if="errors.description" class="error">{{ errors.description }}</p>
-
-    <!-- Price with Peso Sign -->
-    <div class="input-with-symbol">
-      <span class="symbol">₱</span>
-      <input 
-        v-model.number="form.price" 
-        type="number" 
-        min="0" 
-        step="0.01" 
-        placeholder="Price"
-      />
+    <!-- Header Section -->
+    <div class="header-section">
+      <h1 class="page-title">Add New Product</h1>
+      <p class="page-subtitle">Create a new product listing for your store</p>
     </div>
-    <p v-if="errors.price" class="error">{{ errors.price }}</p>
 
-    <!-- Category Select -->
-    <select v-model="form.category_id">
-      <option disabled :value="null">Select Category</option>
-      <option v-for="cat in categories" :key="cat.id" :value="cat.id">
-        {{ cat.name }}
-      </option>
-    </select>
-    <p v-if="errors.category_id" class="error">{{ errors.category_id }}</p>
-
-    <!-- Sizes Section -->
-    <div class="sizes-section">
-
-      <!-- Add Size Card -->
-      <div class="card add-size-card">
-        <h4>Add Size & Stock</h4>
-          <div class="sizes-inputs">
-            <input 
-              v-model="newSize.size" 
-              type="text"
-              placeholder="Size"
-              maxlength="2"
-            />
-
-          <input 
-            v-model.number="newSize.stock" 
-            type="number"
-            min="0"
-            placeholder="Stock"
-          />
-          <button @click="addSize">Add</button>
+    <!-- Main Form -->
+    <div class="form-content">
+      <!-- Product Information Section -->
+      <div class="form-section">
+        <div class="section-header">
+          <h3>Product Information</h3>
+          <div class="section-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20 7L12 3L4 7M20 7L12 11M20 7V17L12 21M12 11L4 7M12 11V21M4 7V17L12 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
         </div>
 
-        <p v-if="errors.sizes" class="error">{{ errors.sizes }}</p>
-      </div>
+        <div class="form-grid">
+          <!-- Product Name -->
+          <div class="form-group">
+            <label class="form-label">Product Name</label>
+            <input 
+              v-model="form.name" 
+              type="text" 
+              placeholder="Enter product name"
+              class="form-input"
+              :class="{ error: errors.name }"
+            />
+            <p v-if="errors.name" class="error-message">{{ errors.name }}</p>
+          </div>
 
-      <!-- Added Sizes Card -->
-      <div class="card added-size-card">
-        <h4 class="title">Added Sizes and Stocks</h4>
-
-        <ul class="size-list">
-          <li 
-            v-for="(s, index) in form.sizes" 
-            :key="index" 
-            class="size-item"
-          >
-            <span><b>Size:</b> {{ s.size }}</span>
-            <span><b>Stock:</b> {{ s.stock }}</span>
-
-            <button 
-              class="remove-btn"
-              @click="removeSize(index)"
+          <!-- Category -->
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <select 
+              v-model="form.category_id" 
+              class="form-input"
+              :class="{ error: errors.category_id }"
             >
-              ✕
-            </button>
-          </li>
+              <option disabled :value="null">Select Category</option>
+              <option v-for="cat in categories" :key="cat.id" :value="cat.id">
+                {{ cat.name }}
+              </option>
+            </select>
+            <p v-if="errors.category_id" class="error-message">{{ errors.category_id }}</p>
+          </div>
 
-          <li v-if="form.sizes.length === 0" class="empty">
-            No sizes added yet
-          </li>
-        </ul>
+          <!-- Price -->
+          <div class="form-group">
+            <label class="form-label">Price</label>
+            <div class="input-with-prefix">
+              <span class="prefix">₱</span>
+              <input 
+                v-model.number="form.price" 
+                type="number" 
+                min="0" 
+                step="0.01" 
+                placeholder="0.00"
+                class="form-input"
+                :class="{ error: errors.price }"
+              />
+            </div>
+            <p v-if="errors.price" class="error-message">{{ errors.price }}</p>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="form-group full-width">
+          <label class="form-label">Description</label>
+          <textarea 
+            v-model="form.description" 
+            placeholder="Enter product description..."
+            class="form-textarea"
+            :class="{ error: errors.description }"
+            rows="4"
+          ></textarea>
+          <p v-if="errors.description" class="error-message">{{ errors.description }}</p>
+        </div>
       </div>
 
-    </div>
+      <!-- Sizes & Stock Section -->
+      <div class="form-section">
+        <div class="section-header">
+          <h3>Sizes & Inventory</h3>
+          <div class="section-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20 7H4C2.89543 7 2 7.89543 2 9V19C2 20.1046 2.89543 21 4 21H20C21.1046 21 22 20.1046 22 19V9C22 7.89543 21.1046 7 20 7Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M16 21V5C16 4.46957 15.7893 3.96086 15.4142 3.58579C15.0391 3.21071 14.5304 3 14 3H10C9.46957 3 8.96086 3.21071 8.58579 3.58579C8.21071 3.96086 8 4.46957 8 5V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
 
-    <!-- Submit Button -->
-    <button class="submit-btn" @click="submitProduct">Add Product</button>
+        <!-- Add Size Form -->
+        <div class="add-size-form">
+          <div class="form-grid compact">
+            <div class="form-group">
+              <label class="form-label">Size</label>
+              <input 
+                v-model="newSize.size" 
+                type="text"
+                placeholder="e.g., S, M, L"
+                maxlength="2"
+                class="form-input"
+              />
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Stock</label>
+              <input 
+                v-model.number="newSize.stock" 
+                type="number"
+                min="0"
+                placeholder="0"
+                class="form-input"
+              />
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">&nbsp;</label>
+              <button class="btn-add-size" @click="addSize">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                Add Size and Stock
+              </button>
+            </div>
+          </div>
+          <p v-if="errors.sizes" class="error-message">{{ errors.sizes }}</p>
+        </div>
+
+        <!-- Added Sizes List -->
+        <div class="sizes-list-container">
+          <h4 class="sizes-list-title">Added Sizes</h4>
+          
+          <div v-if="form.sizes.length === 0" class="empty-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20 7H4C2.89543 7 2 7.89543 2 9V19C2 20.1046 2.89543 21 4 21H20C21.1046 21 22 20.1046 22 19V9C22 7.89543 21.1046 7 20 7Z" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M16 21V5C16 4.46957 15.7893 3.96086 15.4142 3.58579C15.0391 3.21071 14.5304 3 14 3H10C9.46957 3 8.96086 3.21071 8.58579 3.58579C8.21071 3.96086 8 4.46957 8 5V21" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <p>No sizes added yet</p>
+            <span>Add sizes and stock quantities above</span>
+          </div>
+
+          <div v-else class="sizes-grid">
+            <div 
+              v-for="(s, index) in form.sizes" 
+              :key="index" 
+              class="size-card"
+            >
+              <div class="size-info">
+                <div class="size-badge">{{ s.size }}</div>
+                <div class="stock-info">
+                  <span class="stock-label">Stock:</span>
+                  <span class="stock-value">{{ s.stock }}</span>
+                </div>
+              </div>
+              <button 
+                class="btn-remove"
+                @click="removeSize(index)"
+                title="Remove size"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="submit-section">
+        <button class="btn-submit" @click="submitProduct">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Add Product
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -237,209 +332,456 @@ export default {
 
 <style scoped>
 .add-product-container {
-  max-width: 600px;
-  margin: auto;
-  padding: 25px;
-  background: white;
-  border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-  color: #071815;
-  font-family: 'Inter', sans-serif;
+  width: 100%;
+  margin: 0;
+  padding: 30px;
+  background: #ffffff;
+  min-height: 100%;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Header Section */
+.header-section {
+  text-align: center;
+  margin-bottom: 32px;
 }
 
 .page-title {
-    color: #1A5E46;
-    font-weight: 800;
-    font-size: 28px;
-    margin-bottom: 30px;
-    text-align: center;
-    letter-spacing: -0.2px;
+  color: #0a3c2b;
+  font-weight: 700;
+  font-size: 32px;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
 }
 
-.add-product-container input,
-.add-product-container textarea,
-.add-product-container select {
+.page-subtitle {
+  color: #4a7c6d;
+  font-size: 16px;
+  margin: 0;
+  font-weight: 400;
+}
+
+/* Form Container */
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
   width: 100%;
-  padding: 12px 15px;
-  margin: 10px 0;
-  border-radius: 12px;
-  border: 1px solid #1a5e46;
-  background: #f5fdf9;
+  max-width: none;
+}
+
+/* Form Cards */
+.form-card {
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 2px 10px rgba(10, 60, 43, 0.08);
+  border: 1px solid #e0f0e9;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.form-card:hover {
+  box-shadow: 0 4px 20px rgba(10, 60, 43, 0.12);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f9f5;
+}
+
+.card-header h3 {
   color: #0a3c2b;
-  font-size: 15px;
+  font-weight: 600;
+  font-size: 18px;
+  margin: 0;
+}
+
+.card-icon {
+  color: #1a7d5e;
+  display: flex;
+  align-items: center;
+}
+
+/* Form Layout */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+.form-grid.compact {
+  gap: 16px;
+  margin-bottom: 0;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-label {
+  color: #0a3c2b;
+  font-weight: 500;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+/* Form Inputs */
+.form-input,
+.form-textarea,
+select.form-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #c8e6d9;
+  border-radius: 10px;
+  background: #f8fdfb;
+  color: #0a3c2b;
+  font-size: 14px;
   outline: none;
   transition: all 0.3s ease;
   box-sizing: border-box;
 }
 
-.add-product-container input:focus,
-.add-product-container textarea:focus,
-.add-product-container select:focus {
-  border-color: #041c12;
-  box-shadow: 0 0 8px 2px rgba(4, 28, 18, 0.7);
+.form-input:focus,
+.form-textarea:focus,
+select.form-input:focus {
+  border-color: #1a7d5e;
+  box-shadow: 0 0 0 3px rgba(26, 125, 94, 0.1);
+  background: white;
 }
 
-.add-product-container textarea {
-  height: 90px;
-  resize: none;
+.form-input.error,
+.form-textarea.error,
+select.form-input.error {
+  border-color: #e53e3e;
+  box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1);
 }
 
-.input-with-symbol {
+.form-textarea {
+  resize: vertical;
+  min-height: 100px;
+  font-family: inherit;
+}
+
+/* Price Input */
+.input-with-prefix {
   position: relative;
   width: 100%;
-  margin: 10px 0;
 }
-.input-with-symbol .symbol {
+
+.input-with-prefix .prefix {
   position: absolute;
-  left: 12px;
+  left: 16px;
   top: 50%;
   transform: translateY(-50%);
-  color: #0a3c2b;
+  color: #1a7d5e;
   font-weight: 600;
   pointer-events: none;
-}
-.input-with-symbol input {
-  padding-left: 28px;
+  z-index: 1;
 }
 
-.sizes-section {
-  display: flex;
-  gap: 20px;
-  margin-top: 20px;
-  flex-wrap: wrap;
+.input-with-prefix .form-input {
+  padding-left: 36px;
 }
 
-.card {
-  background: #f5fdf9;
-  padding: 20px;
-  border-radius: 15px;
-  flex: 1;
-  min-width: 250px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-}
-.card h4 {
-  font-weight: 600;
-  color: #0a3c2b;
-  margin-bottom: 15px;
+/* Error Messages */
+.error-message {
+  color: #e53e3e;
+  font-size: 12px;
+  margin-top: 6px;
+  font-weight: 500;
 }
 
-.sizes-inputs {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  align-items: center;
-}
-.sizes-inputs input {
-  flex: 1;
-  height: 45px;
-}
-.sizes-inputs button {
-  height: 45px;
-  padding: 0 18px;
+/* Add Size Form */
+.add-size-form {
+  background: #f0f9f5;
+  padding: 8px;
   border-radius: 12px;
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+/* Buttons */
+.btn-add-size {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #1a7d5e;
+  color: white;
   border: none;
-  background: linear-gradient(135deg, #1a5e46, #0a3c2b);
-  color: #fff;
-  font-weight: 600;
+  border-radius: 10px;
+  font-weight: 500;
+  font-size: 14px;
   cursor: pointer;
   transition: all 0.3s ease;
-}
-.sizes-inputs button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(0,255,128,0.3);
+  height: 44px;
+  justify-content: center;
+  width: 100%;
 }
 
-.added-size-card ul {
-  padding-left: 0;
-  list-style: none;
+.btn-add-size:hover {
+  background: #0a3c2b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(26, 125, 94, 0.3);
 }
-.added-size-card ul li {
+
+/* Sizes List */
+.sizes-list-container {
+  margin-top: 16px;
+  width: 100%;
+}
+
+.sizes-list-title {
+  color: #0a3c2b;
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+
+.sizes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+
+.size-card {
+  background: white;
+  border: 1px solid #e0f0e9;
+  border-radius: 12px;
+  padding: 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
-  font-size: 14px;
-  color: #0a3c2b;
-}
-.added-size-card ul li button {
-  padding: 3px 8px;
-  font-size: 12px;
-  border-radius: 8px;
-  border: none;
-  background: #ff4d4d;
-  color: #fff;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-.added-size-card ul li button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 3px 8px rgba(255, 77, 77, 0.3);
-}
-.added-size-card ul li.empty {
-  font-style: italic;
-  color: #666;
+  transition: all 0.3s ease;
+  width: 100%;
 }
 
-.submit-btn {
-  margin-top: 20px;
-  width: 100%;
-  padding: 12px 20px;
-  border-radius: 12px;
+.size-card:hover {
+  border-color: #1a7d5e;
+  box-shadow: 0 2px 8px rgba(26, 125, 94, 0.1);
+}
+
+.size-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.size-badge {
+  background: #1a7d5e;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+  text-align: center;
+}
+
+.stock-info {
+  display: flex;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.stock-label {
+  color: #4a7c6d;
+}
+
+.stock-value {
+  color: #0a3c2b;
+  font-weight: 600;
+}
+
+.btn-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
   border: none;
-  background: linear-gradient(135deg, #0a3c2b, #1a5e46);
-  color: #fff;
+  background: #fef2f2;
+  color: #e53e3e;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.btn-remove:hover {
+  background: #e53e3e;
+  color: white;
+  transform: scale(1.05);
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #7aa895;
+  width: 100%;
+}
+
+.empty-state svg {
+  margin-bottom: 16px;
+}
+
+.empty-state p {
+  margin: 0 0 8px 0;
+  font-weight: 500;
+  color: #4a7c6d;
+}
+
+.empty-state span {
+  font-size: 14px;
+}
+
+/* Submit Section */
+.submit-section {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+  width: 100%;
+}
+
+.btn-submit {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 32px;
+  background: linear-gradient(135deg, #1a7d5e, #0a3c2b);
+  color: white;
+  border: none;
+  border-radius: 12px;
   font-weight: 600;
   font-size: 16px;
   cursor: pointer;
   transition: all 0.3s ease;
-  height: 45px;
+  box-shadow: 0 4px 15px rgba(26, 125, 94, 0.3);
 }
-.submit-btn:hover {
+
+.btn-submit:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(0,255,128,0.2);
+  box-shadow: 0 6px 20px rgba(26, 125, 94, 0.4);
 }
 
-.error {
-  color: #d10000;
-  font-size: 13px;
-  margin-top: -5px;
-  margin-bottom: 8px;
-  padding-left: 3px;
+.btn-submit:active {
+  transform: translateY(0);
 }
 
-/* Modern Custom Notification for ManageOrders */
+/* Modern Custom Notification */
 .custom-notif {
   position: fixed;
-  top: -80px;               /* start hidden above */
+  top: -100px;
   left: 50%;
   transform: translateX(-50%);
-  padding: 15px 25px;
+  padding: 16px 24px;
   border-radius: 12px;
   font-weight: 600;
-  font-size: 15px;
+  font-size: 14px;
   color: white;
   opacity: 0;
   pointer-events: none;
-  transition: all 0.35s ease; /* smooth slide + fade */
-  z-index: 9999;
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  z-index: 10000;
+  min-width: 300px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
 .custom-notif.show {
-  top: 20px;                /* slide down to visible position */
+  top: 24px;
   opacity: 1;
   pointer-events: auto;
 }
 
 /* Success Notification */
 .custom-notif.success {
-  background: linear-gradient(135deg, #00b061, #00773d);
-  box-shadow: 0 5px 15px rgba(0, 255, 150, 0.3);
+  background: linear-gradient(135deg, #1a7d5e, #0a3c2b);
+  border-left: 4px solid #10b981;
 }
 
 /* Error Notification */
 .custom-notif.error {
-  background: linear-gradient(135deg, #d62828, #9b1d1d);
-  box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+  background: linear-gradient(135deg, #e53e3e, #c53030);
+  border-left: 4px solid #f56565;
 }
 
+.notif-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.notif-icon {
+  display: flex;
+  align-items: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .add-product-container {
+    padding: 20px;
+  }
+  
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .sizes-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+  
+  .form-card {
+    padding: 24px;
+  }
+  
+  .page-title {
+    font-size: 28px;
+  }
+  
+  .add-size-form {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .add-product-container {
+    padding: 16px;
+  }
+  
+  .form-card {
+    padding: 20px;
+  }
+  
+  .add-size-form .form-grid.compact {
+    grid-template-columns: 1fr;
+  }
+  
+  .btn-add-size {
+    width: 100%;
+  }
+  
+  .sizes-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .page-title {
+    font-size: 24px;
+  }
+}
 </style>
